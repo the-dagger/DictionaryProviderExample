@@ -43,11 +43,14 @@ public class MainActivity extends ActionBarActivity {
         // Get a Cursor containing all of the rows in the Words table
         Cursor cursor = resolver.query(UserDictionary.Words.CONTENT_URI, null, null, null, null);
         int i = 0;
-        dictTextView.append("The number of words in user dict. are "+cursor.getCount());
+        dictTextView.setText("The number of words in user dict. are "+cursor.getCount()+"\n");
+        dictTextView.append(Words._ID + "  " + Words.WORD + "  " + Words.FREQUENCY);
         int wordcolumn = cursor.getColumnIndex(Words.WORD);
         try {
             while (cursor.moveToNext()){
-                dictTextView.append("\n"+cursor.getString(wordcolumn));
+                dictTextView.append("\n"+cursor.getString(cursor.getColumnIndex(Words._ID)));
+                dictTextView.append("  "+cursor.getString(wordcolumn));
+                dictTextView.append("  "+cursor.getString(cursor.getColumnIndex(Words.FREQUENCY)));
             }
         } finally {
             cursor.close();
