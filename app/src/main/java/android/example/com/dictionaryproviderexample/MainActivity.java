@@ -21,7 +21,8 @@ import android.os.Bundle;
 import android.provider.UserDictionary;
 import android.provider.UserDictionary.Words;
 import android.support.v7.app.ActionBarActivity;
-import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 /**
  * This is the central activity for the Provider Dictionary Example App. The purpose of this app is
@@ -33,27 +34,19 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Get the TextView which will be populated with the Dictionary ContentProvider data.
-        TextView dictTextView = (TextView) findViewById(R.id.dictionary_text_view);
-
-        // Get the ContentResolver which will send a message to the ContentProvider
         ContentResolver resolver = getContentResolver();
-
-        // Get a Cursor containing all of the rows in the Words table
         Cursor cursor = resolver.query(UserDictionary.Words.CONTENT_URI, null, null, null, null);
-        int i = 0;
-        dictTextView.setText("The number of words in user dict. are "+cursor.getCount()+"\n");
-        dictTextView.append(Words._ID + "  " + Words.WORD + "  " + Words.FREQUENCY);
-        int wordcolumn = cursor.getColumnIndex(Words.WORD);
-        try {
-            while (cursor.moveToNext()){
-                dictTextView.append("\n"+cursor.getString(cursor.getColumnIndex(Words._ID)));
-                dictTextView.append("  "+cursor.getString(wordcolumn));
-                dictTextView.append("  "+cursor.getString(cursor.getColumnIndex(Words.FREQUENCY)));
-            }
-        } finally {
-            cursor.close();
+        ListView l = (ListView) findViewById(R.id.listView);
+        String[] COLUMNS_TO_BE_BOUND ={Words.WORD, Words.FREQUENCY};
+        int[] layouts ={android.R.id.text1, android.R.id.text2};
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+                    android.R.layout.two_line_list_item,
+                    cursor,
+                    COLUMNS_TO_BE_BOUND,
+                    layouts,
+                    0);
+            l.setAdapter(adapter);
         }
     }
 }
